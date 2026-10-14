@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+.venv/
+.env
+outputs/*
+!outputs/.gitkeep
+models/*
+!models/.gitkeep
+memory/*
+!memory/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+.DS_Store
