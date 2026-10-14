@@ -1,13 +1,37 @@
+# Byte-compiled / cache files
 __pycache__/
 *.py[cod]
+*$py.class
+
+# Virtual environments
 .venv/
+venv/
+env/
+
+# Environment and secrets
 .env
-outputs/*
-!outputs/.gitkeep
-models/*
-!models/.gitkeep
-memory/*
-!memory/.gitkeep
+.env.*
+.streamlit/secrets.toml
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Generated data artifacts (preserve directory via .gitkeep)
 data/processed/*
 !data/processed/.gitkeep
-.DS_Store
+
+# Generated memory artifacts (preserve source code like case_bank.py and retriever.py)
+memory/cases.json
+memory/cases.faiss
+memory/case_metadata.json
+memory/case_embeddings.npy
+memory/vector_index.joblib
+
+# Generated models (preserve source code like risk_model.py and yield_model.py)
+models/*.joblib
+models/*.pkl
+
+# Outputs
+outputs/*
+!outputs/.gitkeep

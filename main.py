@@ -1,3 +1,7 @@
+import sys
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
 import argparse
 import json
 import pandas as pd
@@ -53,5 +57,20 @@ def main():
     elif args.command == "demo":
         demo()
 
+# Detect if executed via Streamlit (e.g. Streamlit Cloud default main file setting)
+try:
+    import streamlit.runtime
+    _RUNNING_IN_STREAMLIT = streamlit.runtime.exists()
+except Exception:
+    _RUNNING_IN_STREAMLIT = False
+
+if _RUNNING_IN_STREAMLIT:
+    import runpy
+    from pathlib import Path
+    _app_path = Path(__file__).resolve().parent / "app" / "streamlit_app.py"
+    runpy.run_path(str(_app_path), run_name="__main__")
+
 if __name__ == "__main__":
-    main()
+    if not _RUNNING_IN_STREAMLIT:
+        main()
+

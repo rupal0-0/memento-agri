@@ -39,6 +39,7 @@ class MementoAgriAgent:
             "outcome": {"yield_anomaly": 0}
         }
         cases = self.retriever.retrieve(query_case)
+        context["retrieved_cases"] = cases
         plan = self.planner.plan(query, context, risk, cases)
         execution = self.executor.run(plan)
         advisory = self.llm.generate(query, context, risk, execution)

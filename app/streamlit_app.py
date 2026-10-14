@@ -20,7 +20,9 @@ import pandas as pd
 
 
 from config import (
+    RAW_DATA,
     PROCESSED_DATA,
+    CASE_BANK,
     FAISS_INDEX,
     CASE_META
 )
@@ -79,47 +81,33 @@ def load_agent():
 
 
 # ============================================================
-# CHECK PROCESSED DATASET
+# CHECK / AUTO-INITIALIZE DATASET & MEMORY
 # ============================================================
 
 if not Path(PROCESSED_DATA).exists():
-
-    st.error(
-        "❌ Processed dataset not found."
-    )
-
-    st.info(
-        "Build the processed dataset first:"
-    )
-
-    st.code(
-        "python main.py build",
-        language="bash"
-    )
-
-    st.stop()
+    if Path(RAW_DATA).exists():
+        with st.status("⚙️ Initializing preprocessed climate dataset for the first time...", expanded=True) as status:
+            st.write("Processing historical observations and computing climate anomaly stress...")
+            from data.preprocess import preprocess
+            preprocess(RAW_DATA, PROCESSED_DATA)
+            status.update(label="✅ Dataset preprocessed successfully!", state="complete", expanded=False)
+    else:
+        st.error(
+            f"❌ Processed dataset not found at `{PROCESSED_DATA}` and raw dataset missing at `{RAW_DATA}`."
+        )
+        st.stop()
 
 
-# ============================================================
-# CHECK MEMENTO MEMORY
-# ============================================================
+if not Path(FAISS_INDEX).exists() or not Path(CASE_META).exists():
+    with st.status("⚙️ Building case bank and semantic memory index...", expanded=True) as status:
+        st.write("Constructing structured cases and indexing semantic vector space...")
+        from memory.case_bank import build_case_bank
+        from memory.retriever import build_index
+        _df_init = pd.read_csv(PROCESSED_DATA)
+        _cases_init = build_case_bank(_df_init, CASE_BANK)
+        build_index(_cases_init, FAISS_INDEX, CASE_META)
+        status.update(label="✅ Memory index constructed successfully!", state="complete", expanded=False)
 
-if not Path(FAISS_INDEX).exists():
-
-    st.error(
-        "❌ Memento memory has not been built yet."
-    )
-
-    st.info(
-        "Build the FAISS memory first:"
-    )
-
-    st.code(
-        "python main.py build-memory",
-        language="bash"
-    )
-
-    st.stop()
 
 
 # ============================================================
